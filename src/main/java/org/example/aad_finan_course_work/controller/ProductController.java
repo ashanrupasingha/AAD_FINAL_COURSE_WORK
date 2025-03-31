@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin
 @RestController
 @RequestMapping("api/v1/product")
@@ -46,4 +48,13 @@ public class ProductController {
             throw new RuntimeException(e);
         }
     }
+    @PostMapping("/getAllProducts")
+    public ResponseEntity<ResponseDTO> getAllproduct(){
+        List<ProductDTO> dtos=productService.getAllProducts();
+        System.out.println("awooooo"+dtos);
+        ResponseDTO responseDTO =new ResponseDTO(VarList.Created,"Success",dtos);
+        return  new ResponseEntity<>(responseDTO,HttpStatus.OK);
+    }
+
+
 }

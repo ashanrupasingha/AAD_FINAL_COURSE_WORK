@@ -16,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 public class ProductServiceImpl implements ProductService {
@@ -32,7 +35,9 @@ public class ProductServiceImpl implements ProductService {
 
         boolean b = productRepo.existsByName(productDTO.getName());
         if (!b){
-            Product save = productRepo.save(modelMapper.map(productDTO, Product.class));
+            productDTO.setProductId(1);
+            Product product = new Product(productDTO.getProductId(), productDTO.getDescription(), productDTO.getPrice(), productDTO.getName(), productDTO.getImagePath());
+            Product save = productRepo.save(product);
             if (save != null){
                 return VarList.Created;
             } else {
@@ -41,5 +46,11 @@ public class ProductServiceImpl implements ProductService {
         }
         return VarList.Bad_Request;
         }
+
+    @Override
+    public List<ProductDTO> getAllProducts() {
+        List<Product> list = productRepo.findAll();
+        return list.stream().map(product -> modelMapper.map(product,ProductDTO.class)).collect(Collectors.toList());
     }
+}
 
