@@ -1,8 +1,6 @@
 package org.example.aad_finan_course_work.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 //@AllArgsConstructor
@@ -20,6 +18,7 @@ public class ProductDTO {
     public ProductDTO() {
     }
 
+
     public ProductDTO(int productId, String name, Double price, String description, String imagePath) {
         this.productId = productId;
         this.name = name;
@@ -32,7 +31,7 @@ public class ProductDTO {
         return productId;
     }
 
-    public void setProductId(int productId) {
+    public void setProductId(Integer productId) {
         this.productId = productId;
     }
 

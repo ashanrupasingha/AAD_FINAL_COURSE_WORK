@@ -15,4 +15,12 @@ public class WebAppConfig implements WebMvcConfigurer {
     }
 
 
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost") // Adjust to your HELPZ website URL
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
 }

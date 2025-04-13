@@ -1,151 +1,660 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Products</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <title>Product Manage Form</title>
   <style>
-    body { background-color: #f4f4f4; }
-    .form-container, .table-container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    body {
+
     }
-    .btn-delete { background-color: #dc3545; color: #fff; }
-    .img-thumbnail { width: 80px; height: 80px; object-fit: cover; }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+    label, input, textarea {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    :root {
+      --primary: #007bff;
+      --secondary: #6c757d;
+      --success: #28a745;
+      --danger: #dc3545;
+      --warning: #ffc107;
+      --info: #17a2b8;
+      --light: #f8f9fa;
+      --dark: #343a40;
+      --sidebar-width: 250px;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+      overflow-x: hidden;
+    }
+    .avatar {
+      font-size: 24px; /* Adjust size */
+      color: #333; /* Change color */
+      margin-right: 10px; /* Space between icon and text */
+    }
+
+
+    .dashboard-container {
+      display: flex;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: linear-gradient(to bottom, #343a40, #212529);
+      position: fixed;
+      overflow-y: auto;
+      transition: all 0.3s;
+      z-index: 999;
+    }
+
+    .sidebar-brand {
+      padding: 20px 30px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-brand a {
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .sidebar-brand a span {
+      color: var(--primary);
+    }
+
+    .sidebar-menu {
+      padding: 20px 0;
+    }
+
+    .sidebar-menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar-menu ul li {
+      padding: 0;
+      position: relative;
+    }
+
+    .sidebar-menu ul li a {
+      padding: 15px 25px;
+      display: block;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.3s;
+      border-left: 4px solid transparent;
+    }
+
+    .sidebar-menu ul li a:hover,
+    .sidebar-menu ul li.active a {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid var(--primary);
+    }
+
+    .sidebar-menu ul li a i {
+      margin-right: 10px;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Main Content */
+    .main-content {
+      width: calc(100% - var(--sidebar-width));
+      margin-left: var(--sidebar-width);
+      transition: all 0.3s;
+    }
+
+    .topbar {
+      background-color: #fff;
+      height: 70px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    .toggle-sidebar {
+      font-size: 20px;
+      margin-right: 20px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .search-bar {
+      flex-grow: 1;
+      margin-right: 20px;
+    }
+
+    .search-form {
+      position: relative;
+    }
+
+    .search-form input {
+      width: 100%;
+      height: 40px;
+      border-radius: 20px;
+      border: 1px solid #eaeaea;
+      padding: 0 20px;
+      padding-left: 40px;
+      font-size: 14px;
+    }
+
+    .search-form button {
+      background: transparent;
+      border: none;
+      position: absolute;
+      top: 50%;
+      left: 15px;
+      transform: translateY(-50%);
+      color: #aaa;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+    }
+
+    .notification {
+      margin-right: 20px;
+      position: relative;
+    }
+
+    .notification i {
+      font-size: 20px;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .notification .badge {
+      position: absolute;
+      top: -5px;
+      right: -8px;
+      background-color: var(--danger);
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .user-profile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+
+    .user-info {
+      line-height: 1.2;
+    }
+
+    .user-info h6 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .user-info span {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .content-wrapper {
+      padding: 30px;
+    }
+
+    .page-header {
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-header h2 {
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .breadcrumb {
+      background: transparent;
+      padding: 0;
+      margin: 0;
+    }
+
+    .dashboard-card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      padding: 25px;
+      margin-bottom: 30px;
+      transition: all 0.3s;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card {
+      border-left: 4px solid;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-card .icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #fff;
+    }
+
+    .stat-card .content h4 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .stat-card .content p {
+      font-size: 14px;
+      color: #888;
+      margin: 0;
+    }
+
+    .primary {
+      border-color: var(--primary);
+    }
+
+    .primary .icon {
+      background-color: var(--primary);
+    }
+
+    .success {
+      border-color: var(--success);
+    }
+
+    .success .icon {
+      background-color: var(--success);
+    }
+
+    .warning {
+      border-color: var(--warning);
+    }
+
+    .warning .icon {
+      background-color: var(--warning);
+    }
+
+    .danger {
+      border-color: var(--danger);
+    }
+
+    .danger .icon {
+      background-color: var(--danger);
+    }
+
+    .table-responsive {
+      margin-bottom: 0;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 5px;
+    }
+
+    .custom-table thead th {
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 15px;
+      color: #666;
+      background-color: #f8f9fa;
+    }
+
+    .custom-table tbody tr {
+      background-color: #fff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+    }
+
+    .custom-table tbody tr:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-table tbody td {
+      border: none;
+      padding: 15px;
+      vertical-align: middle;
+      font-size: 14px;
+    }
+
+    .custom-table .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+
+    .custom-table .user-cell {
+      display: flex;
+      align-items: center;
+    }
+
+    .custom-table .user-info {
+      line-height: 1.2;
+    }
+
+    .custom-table .user-name {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .custom-table .user-email {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .status {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-admin {
+      background-color: rgba(0, 123, 255, 0.1);
+      color: var(--primary);
+    }
+
+    .status-agent {
+      background-color: rgba(40, 167, 69, 0.1);
+      color: var(--success);
+    }
+
+    .status-customer {
+      background-color: rgba(23, 162, 184, 0.1);
+      color: var(--info);
+    }
+
+    .btn-action {
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 5px;
+      transition: all 0.3s;
+    }
+
+    .btn-deactivate {
+      background-color: rgba(255, 193, 7, 0.1);
+      color: var(--warning);
+    }
+
+    .btn-deactivate:hover {
+      background-color: var(--warning);
+      color: #fff;
+    }
+
+    .btn-remove {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: var(--danger);
+    }
+
+    .btn-remove:hover {
+      background-color: var(--danger);
+      color: #fff;
+    }
+
+    .add-new-user {
+      background-color: var(--primary);
+      color: white;
+      border-radius: 5px;
+      padding: 8px 15px;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .add-new-user:hover {
+      background-color: #0069d9;
+      transform: translateY(-2px);
+    }
+
+    .add-new-user i {
+      margin-right: 5px;
+    }
   </style>
 </head>
 <body>
-<div class="container py-5">
-  <h1 class="text-center mb-5">Manage Products</h1>
 
-  <div class="form-container mb-5">
-    <h3 class="mb-4">Add New Product</h3>
-    <form id="addProductForm" enctype="multipart/form-data">
-      <div class="row g-3">
-        <div class="col-md-6">
+<div class="sidebar">
+  <div class="sidebar-brand">
 
-        </div>
-        <div class="col-md-6">
-          <label for="productName" class="form-label">Product Name</label>
-          <input type="text" class="form-control" id="productName" name="productName" required>
-        </div>
-        <div class="col-md-6">
-
-        </div>
-        <div class="col-md-12">
-          <label for="productDescription" class="form-label">Product Description</label>
-          <textarea class="form-control" id="productDescription" name="productDescription" rows="3" required></textarea>
-        </div>
-        <div class="col-md-6">
-          <label for="productPrice" class="form-label">Price</label>
-          <input type="number" class="form-control" id="productPrice" name="price" required>
-        </div>
-        <div class="col-md-6">
-          <label for="productImage" class="form-label">Product Image</label>
-          <input type="file" class="form-control" id="productImage" name="productImage" required>
-        </div>
-        <div class="col-md-12 text-center">
-          <button type="submit" class="btn btn-primary">Add Product</button>
-        </div>
-      </div>
-    </form>
   </div>
-
-  <div class="form-container mb-5">
-    <h3 class="mb-4">Search Products</h3>
-    <input type="text" class="form-control" id="searchQuery" placeholder="Enter product name to search">
-  </div>
-
-  <div class="table-container">
-    <h3 class="mb-4">Existing Products</h3>
-    <div class="table-responsive">
-      <table class="table table-striped table-hover">
-        <thead class="table-dark">
-        <tr>
-          <th>ID</th>
-          <th>Image</th>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Category</th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody id="productList">
-        </tbody>
-      </table>
-    </div>
+  <div class="sidebar-menu">
+    <ul>
+      <li>
+        <a href="../free-charity-website-template/admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      </li>
+      <li>
+        <a href="../free-charity-website-template/admin.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </li>
+    </ul>
   </div>
 </div>
 
-<script>
-  $(document).ready(function () {
-    loadProducts();
-    let name = $('#productName').val();
-    let description = $('#productDescription').val();
-    let image = $('#productImage').val();
-    let price = $('#productPrice').val();
+<div class="container">
+  <h2>Product Manage Form</h2>
+  <form>
+    <label for="productId">Product ID:</label>
+    <input type="text" id="productId" name="id" required>
 
-    const data = {
+    <label for="name"> Name:</label>
+    <input type="text" id="name" name="planname" required>
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" rows="4" required></textarea>
+
+    <label for="imagePath">Image Path:</label>
+    <input type="number" id="imagePath" name="validMonth" required>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" step="0.01" required>
+
+    <button id="submit" type="button">Submit</button>
+  </form>
+</div>
+
+
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="content-wrapper">
+
+    <div class="dashboard-card">
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+          <tr>
+            <th>ProductID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>ImagePath</th>
+            <th>Price</th>
+          </tr>
+          </thead>
+          <tbody id="packageTable">
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../js/jquery.js"></script>
+<script>
+  $("#submit").on("click",()=>{
+    const productId = $("#productId").val()
+    const name = $("#name").val()
+    const description = $("#description").val()
+    const imagePath = $("#imagePath").val()
+    const price = $("#price").val()
+
+    const packagedata ={
+      productId:productId,
       name:name,
       description:description,
-      image:image,
+      imagePath:imagePath,
       price:price
     }
-    console.log(data)
-    $("#addProductForm").submit(function (event) {
-      event.preventDefault();
-      alert("hellooooo")
-      let formData = new FormData(this);
-      $.ajax({
-        url: 'http://localhost:8080/api/v1/product/save',
-        type: 'POST',
-        data:JSON.stringify({
-          productId:1,
-          name:name,
-          description:description,
-          image:image,
-          price:price
-        }),
-        contentType: 'application/json',
-        processData: false,
-        success: function () {
-          alert("Product added successfully");
-          loadProducts();
-          $("#addProductForm")[0].reset();
-        }
-      });
-    });
-
-    $("#searchQuery").on("keyup", function () {
-      let query = $(this).val();
-      $.get("SearchProductServlet", { searchQuery: query }, function (data) {
-        $("#productList").html(data);
-      });
-    });
-
-    $(document).on("click", ".delete-btn", function () {
-      let productId = $(this).data("id");
-      if (confirm("Are you sure you want to delete this product?")) {
-        $.post("DeleteProductServlet", { id: productId }, function () {
-          alert("Product deleted successfully");
-          loadProducts();
-        });
+    console.log(packagedata)
+    $.ajax({
+      type:"POST",
+      url:"http://localhost:8080/api/v1/product/save",
+      contentType:"application/json",
+      data:JSON.stringify(packagedata),
+      header:{
+        "Authorization":"Bearer"+localStorage.getItem("authToken")
+      },
+      success: function (response){
+        alert("Package added successfully");
+      },
+      error: function (error){
+        alert("Error adding Package");
       }
     });
-  });
+  })
 
-  function loadProducts() {
-    $.get("LoadProductsServlet", function (data) {
-      $("#productList").html(data);
+  function loadAllpackages() {
+    $.ajax({
+      url: 'http://localhost:8080/api/v1/product/getAll',
+      type: 'POST',
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("token")
+      },
+      success: function(response) {
+        alert("its done")
+        console.log("test",response.data)
+        populateUserTable(response.data);
+
+      },
+      error: function(xhr, status, error) {
+        alert("Error loading users: " + error);
+      }
     });
   }
+  $(document).ready(function() {
+    // Load all users when page loads
+    loadAllpackages();
+  });
+
+  function populateUserTable(packages) {
+    let tableBody = $("#packageTable");
+    tableBody.empty(); // Clear existing rows
+
+    packages.forEach(pkg => {
+      let row = `<tr>
+            <td>${pkg.productId}</td>
+            <td>${pkg.name}</td>
+            <td>${pkg.description}</td>
+            <td>${pkg.imagePath}</td>
+            <td>${pkg.price}</td>
+        </tr>`;
+      tableBody.append(row);
+    });
+  }
+
+
+  $("#packageTable").on("click", "tr", function () {
+    console.log("Table row clicked!");
+
+
+    const productId = $(this).find("td:eq(0)").text().trim();
+    const name = $(this).find("td:eq(1)").text().trim();
+    const description = $(this).find("td:eq(2)").text().trim();
+    const imagePath = $(this).find("td:eq(3)").text().trim();
+    const price = $(this).find("td:eq(4)").text().trim();
+
+    console.log("Package ID:", packageId);
+
+    // Form fields update කරන්න
+    $("#productId").val(productId);
+    $("#name").val(name);
+    $("#description").val(description);
+    $("#imagePath").val(imagePath);
+    $("#price").val(price);
+  });
+
+
+
+
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
