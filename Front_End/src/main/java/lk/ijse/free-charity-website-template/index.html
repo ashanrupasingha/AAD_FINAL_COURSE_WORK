@@ -808,6 +808,14 @@
                 </div>
             </div>
         </div>
+        <!-- Packages Section -->
+        <section class="packages-section py-5">
+            <div class="container">
+                <div class="row justify-content-center" id="packageList">
+                    <!-- Packages will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
         <!-- Footer End -->
         
         <!-- Back to top button -->
@@ -827,6 +835,50 @@
         <script src="lib/counterup/counterup.min.js"></script>
         <script src="lib/parallax/parallax.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script>
+
+            $.ajax({
+                url: "http://localhost:8080/api/v1/product/getAll",
+                type: "POST",
+                success: function (response) {
+                    $("#packageList").empty();
+
+                    if (!Array.isArray(response.data)) {
+                        console.error("Unexpected response format:", response);
+                        alert("Error fetching products.");
+                        return;
+                    }
+
+                    response.data.forEach(pkg => {
+                        $("#packageList").append(`
+                            <div class="col-md-4 mb-4">
+                                <div class="package-card">
+                                    <div class="package-title">${pkg.name.toUpperCase()}</div>
+                                    <div class="package-price">Rs. ${pkg.price.toFixed(2)}</div>
+                                    <p class="text-muted">Per Month (Tax applicable)</p>
+                                    <h5 class="mt-3">Unlimited</h5>
+                                    <small class="text-muted">AnyNet Voice</small>
+                                    <ul class="package-features">
+                                        <li>📩 ${pkg.description || 1000} SMS</li>
+                                    </ul>
+                                    <div class="promo-badge">🔥 </div>
+<!--                                    <button class="btn btn-package w-100 mt-3" onclick="activatePackage('${pkg.name}')">GET PACKAGE</button>-->
+                                    <button class="btn btn-package w-100 mt-3" onclick="activatePackage('${pkg.productId}', ${pkg.price})">GET PACKAGE</button>
+
+                                </div>
+                            </div>
+                        `);
+                    });
+                },
+                error: function (xhr) {
+                    console.error("Failed to load products:", xhr.responseText);
+                    alert("Failed to fetch products.");
+                }
+            });
+
+
+        </script>
         <script>
             $(document).ready(function() {
                 // Fetch products from your API

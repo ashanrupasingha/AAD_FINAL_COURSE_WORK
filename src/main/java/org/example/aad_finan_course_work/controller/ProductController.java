@@ -34,7 +34,7 @@ public class ProductController {
     public ResponseEntity<ResponseDTO> savePackage(@RequestBody @Validated ProductDTO packageDTO){
         System.out.println(packageDTO+"me dan awe");
         int Result = productService.savePackage(packageDTO);
-        ResponseDTO responseDTO = new ResponseDTO(VarList.Created,"Package Active Successfully", Result);
+        ResponseDTO responseDTO = new ResponseDTO(VarList.Created,"product Active Successfully", Result);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
@@ -51,7 +51,7 @@ public class ProductController {
     public ResponseUtil updatePackage(@PathVariable String id, @RequestBody ProductDTO packageDTO) {
         packageDTO.setProductId(Integer.parseInt(id));
         productService.updatePackage(packageDTO);
-        return new ResponseUtil(200, "Package updated successfully", null);
+        return new ResponseUtil(200, "product updated successfully", null);
     }
     @GetMapping("/getAllForWebsite")
     public ResponseEntity<List<ProductDTO>> getAllProductsForWebsite() {
