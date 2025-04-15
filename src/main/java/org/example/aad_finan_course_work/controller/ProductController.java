@@ -1,6 +1,6 @@
 package org.example.aad_finan_course_work.controller;
 
-import jakarta.validation.Valid;
+//import jakarta.validation.Valid;
 import org.example.aad_finan_course_work.dto.ProductDTO;
 import org.example.aad_finan_course_work.dto.ResponseDTO;
 import org.example.aad_finan_course_work.service.ProductService;

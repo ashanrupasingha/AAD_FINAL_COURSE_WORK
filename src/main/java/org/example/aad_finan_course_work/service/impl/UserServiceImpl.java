@@ -2,6 +2,7 @@ package org.example.aad_finan_course_work.service.impl;
 
 import jakarta.transaction.Transactional;
 
+import org.example.aad_finan_course_work.config.VerificationCodeGenerator;
 import org.example.aad_finan_course_work.dto.UserDTO;
 import org.example.aad_finan_course_work.entity.User;
 import org.example.aad_finan_course_work.repo.UserRepo;
@@ -28,6 +29,9 @@ public class UserServiceImpl implements UserDetailsService, UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private EmailService emailService;
+
 
     @Override
     public int saveUser(UserDTO userDTO) {
@@ -38,11 +42,46 @@ public class UserServiceImpl implements UserDetailsService, UserService {
             BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
             userDTO.setPassword(encodedPassword);  // Set the encoded password
+            String verificationCode = VerificationCodeGenerator.generateCode(6);
 
 
             // Save the user after mapping to the User entity
-            userRepo.save(modelMapper.map(userDTO, User.class));
+            User user = modelMapper.map(userDTO, User.class);
+            user.setVerificationCode(verificationCode);
+            user.setVerified(false);
+            userRepo.save(user);
+            emailService.sendVerificationEmail(user.getEmail(),user.getVerificationCode());
+
             return VarList.Created;  // User successfully created
+        }
+    }
+
+    @Override
+    public int verifyUser(String email, String code) {
+        if (email == null || email.trim().isEmpty() || code == null || code.trim().isEmpty()) {
+            return VarList.Bad_Request;
+        }
+
+        try {
+
+            User user = userRepo.findByEmail(email);
+            if (user == null) {
+                return VarList.Not_Found;
+            }
+            if (user.isVerified()) {
+                return VarList.Conflict;
+            }
+            if (user.getVerificationCode() == null || !user.getVerificationCode().equals(code)) {
+                return VarList.Unauthorized;
+            }
+            user.setVerificationCode(null);
+            user.setVerified(true);
+            userRepo.save(user);
+
+            return VarList.OK;
+
+        } catch (Exception e) {
+            return VarList.Internal_Server_Error;
         }
     }
 
@@ -54,6 +93,28 @@ public class UserServiceImpl implements UserDetailsService, UserService {
         } else {
             return null;  // Return null if user doesn't exist
         }
+    }
+
+    @Override
+    public int updateUser(UserDTO userDTO) {
+      /*  try {
+            User user = userRepo.findByEmail(userDTO.getEmail());
+            if (user!= null) {
+                if (userDTO.getPassword()!= null) {
+                    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                    String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+                    user.setPassword(encodedPassword);
+                }
+
+                userRepo.save(modelMapper.map(userDTO, User.class));
+                return VarList.No_Content;
+            } else {
+                return VarList.NotFound;
+            }
+        }catch (Exception e) {
+            throw new RuntimeException("Error updating user: " + e.getMessage(), e);
+        }*/
+        return 0;
     }
 
     @Override
