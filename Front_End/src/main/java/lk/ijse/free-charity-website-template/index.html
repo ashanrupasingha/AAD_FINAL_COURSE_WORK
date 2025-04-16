@@ -23,6 +23,101 @@
 
         <!-- Template Stylesheet -->
         <link href="css/style.css" rel="stylesheet">
+        <style>
+            /* Donation Cards Styles */
+            .donation-cards-section {
+                background-color: #f8f9fa;
+            }
+
+            .donation-card {
+                border: none;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                transition: all 0.3s ease;
+                margin-bottom: 30px;
+                background: white;
+                position: relative;
+            }
+
+            .donation-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            }
+
+            .donation-card .card-header {
+                background: linear-gradient(135deg, #ff9300, #ffca00);
+                color: white;
+                padding: 20px;
+                text-align: center;
+                border-bottom: none;
+            }
+
+            .donation-card .card-header h3 {
+                font-weight: 600;
+                margin-bottom: 0;
+            }
+
+            .donation-card .donation-amount {
+                font-size: 36px;
+                font-weight: 700;
+                color: #ffba50;
+                margin: 20px 0;
+                text-align: center;
+            }
+
+            .donation-card .donation-impact {
+                background: rgba(74, 137, 220, 0.1);
+                padding: 15px;
+                border-radius: 8px;
+                margin: 20px 0;
+                font-size: 14px;
+                color: #ffca00;
+                text-align: center;
+                border-left: 3px solid #ffca00;
+            }
+
+            .donation-card .donation-impact i {
+                margin-right: 8px;
+            }
+
+            .donation-card .btn-donate {
+                display: block;
+                width: 100%;
+                padding: 12px;
+                border-radius: 6px;
+                background: #ffca00;
+                color: #ffffff;
+                font-weight: 600;
+                border: none;
+                transition: all 0.3s;
+            }
+
+            .donation-card .btn-donate:hover {
+                background: #ff9300;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(74, 137, 220, 0.3);
+            }
+
+            .donation-card.featured {
+                border: 2px solid #ffca00;
+            }
+
+            .donation-card.featured .card-header {
+                background: linear-gradient(135deg, #ff9300, #ffca00);
+            }
+
+            .donation-card.featured .btn-donate {
+                background: linear-gradient(135deg, #ff9300, #ffca00);
+            }
+
+            .divider {
+                width: 80px;
+                height: 3px;
+                background: linear-gradient(to right, #ff9300, #ffca00);
+                margin: 15px auto;
+            }
+        </style>
     </head>
 
     <body>
@@ -447,6 +542,25 @@
             </div>
         </div>
         <!-- Event End -->
+        <!-- Donation Cards Section -->
+        <section class="donation-cards-section py-5 bg-light">
+            <div class="container">
+                <div class="section-header text-center mb-5">
+                    <h2>Support Our Cause</h2>
+                    <p class="lead">Your donation makes a real difference</p>
+                    <div class="divider mx-auto"></div>
+                </div>
+
+                <div class="row justify-content-center" id="donationCardsList">
+                    <!-- Donation cards will be loaded here -->
+                </div>
+
+                <div class="text-center mt-4">
+                    <a href="#" class="text-primary">Can't decide? Contact us for guidance</a>
+                </div>
+            </div>
+        </section>
+
 
 
         <!-- Team Start -->
@@ -808,16 +922,7 @@
                 </div>
             </div>
         </div>
-        <!-- Packages Section -->
-        <section class="packages-section py-5">
-            <div class="container">
-                <div class="row justify-content-center" id="packageList">
-                    <!-- Packages will be dynamically inserted here -->
-                </div>
-            </div>
-        </section>
-        <!-- Footer End -->
-        
+
         <!-- Back to top button -->
         <a href="#" class="back-to-top"><i class="fa fa-chevron-up"></i></a>
         
@@ -837,47 +942,89 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
         <script>
-
             $.ajax({
                 url: "http://localhost:8080/api/v1/product/getAll",
                 type: "POST",
-                success: function (response) {
-                    $("#packageList").empty();
+                success: function(response) {
+                    $("#donationCardsList").empty();
 
                     if (!Array.isArray(response.data)) {
                         console.error("Unexpected response format:", response);
-                        alert("Error fetching products.");
+                        $("#donationCardsList").html(`
+                <div class="col-12 text-center py-4">
+                    <div class="alert alert-warning">
+                        We're currently unable to load donation options. Please try again later.
+                    </div>
+                </div>
+            `);
                         return;
                     }
 
-                    response.data.forEach(pkg => {
-                        $("#packageList").append(`
-                            <div class="col-md-4 mb-4">
-                                <div class="package-card">
-                                    <div class="package-title">${pkg.name.toUpperCase()}</div>
-                                    <div class="package-price">Rs. ${pkg.price.toFixed(2)}</div>
-                                    <p class="text-muted">Per Month (Tax applicable)</p>
-                                    <h5 class="mt-3">Unlimited</h5>
-                                    <small class="text-muted">AnyNet Voice</small>
-                                    <ul class="package-features">
-                                        <li>📩 ${pkg.description || 1000} SMS</li>
-                                    </ul>
-                                    <div class="promo-badge">🔥 </div>
-<!--                                    <button class="btn btn-package w-100 mt-3" onclick="activatePackage('${pkg.name}')">GET PACKAGE</button>-->
-                                    <button class="btn btn-package w-100 mt-3" onclick="activatePackage('${pkg.productId}', ${pkg.price})">GET PACKAGE</button>
+                    // Sort donations by amount
+                    response.data.sort((a, b) => a.price - b.price);
 
-                                </div>
+                    response.data.forEach((donation, index) => {
+                        // Make the middle card featured
+                        const isFeatured = index === Math.floor(response.data.length / 2);
+
+                        // Determine impact based on donation amount
+                        let impact = "";
+                        if (donation.price < 30) {
+                            impact = "Provides meals for 5 children";
+                        } else if (donation.price < 60) {
+                            impact = "Supports education for 1 child";
+                        } else if (donation.price < 100) {
+                            impact = "Provides clean water for a family";
+                        } else {
+                            impact = "Funds a community project";
+                        }
+
+                        $("#donationCardsList").append(`
+                <div class="col-lg-4 col-md-6">
+                    <div class="donation-card ${isFeatured ? 'featured' : ''}">
+                        <div class="card-header">
+                            <h3>${donation.name}</h3>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="donation-amount">
+                                Rs. ${donation.price.toFixed(2)}
                             </div>
-                        `);
+                            <div class="donation-impact">
+                                <i class="fas fa-heart"></i> ${impact}
+                            </div>
+                            <p class="text-muted text-center mb-4">
+                                ${donation.description || 'One-time tax deductible donation'}
+                            </p>
+                            <button class="btn-donate" onclick="processDonation('${donation.productId}', ${donation.price})">
+                                DONATE NOW <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `);
                     });
                 },
-                error: function (xhr) {
-                    console.error("Failed to load products:", xhr.responseText);
-                    alert("Failed to fetch products.");
+                error: function(xhr) {
+                    console.error("Failed to load donation options:", xhr.responseText);
+                    $("#donationCardsList").html(`
+            <div class="col-12 text-center py-4">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    We couldn't load donation options. Please refresh or contact support.
+                </div>
+                <button class="btn btn-primary mt-2" onclick="location.reload()">
+                    <i class="fas fa-sync-alt mr-2"></i> Try Again
+                </button>
+            </div>
+        `);
                 }
             });
 
-
+            function processDonation(productId, amount) {
+                // Your donation processing logic here
+                console.log(`Processing donation of Rs. ${amount} for product ${productId}`);
+                // Redirect to donation page or show modal
+            }
         </script>
         <script>
             $(document).ready(function() {
