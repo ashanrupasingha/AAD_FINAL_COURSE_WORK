@@ -61,6 +61,7 @@ public class WebSecurityConfig {
                                 "/api/v1/product/upload",
                                 "/api/v1/product/update/",
                                 "/api/v1/product/delete/",
+                                "/api/donate",
                                 "/api/v1/img/upload",
                                 "/api/v1/product/getAllProducts",
                                 "api/v1/email/send",
@@ -86,4 +87,6 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
+
+
 }

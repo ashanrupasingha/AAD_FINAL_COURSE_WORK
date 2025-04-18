@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Donate Now</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,7 +35,7 @@
             color: #444;
         }
 
-        form input {
+        form input, form select {
             width: 100%;
             padding: 10px;
             margin-bottom: 15px;
@@ -61,62 +63,92 @@
             text-align: center;
             font-weight: bold;
         }
-
     </style>
 </head>
 <body>
 <div class="donate-container">
     <h1>Make a Donation</h1>
     <form id="donation-form">
-        <label for="userId">User ID</label>
-        <input type="text" id="userId" name="userId" placeholder="Enter your User ID" required>
+        <label for="username">User Name</label>
+        <input type="text" id="username" name="username" placeholder="Enter your User Name" required>
+
+        <!-- Hidden input to hold userId (set dynamically from session/local storage if needed) -->
+        <input type="hidden" id="userId" value="U001"> <!-- Replace with actual logged-in userId -->
 
         <label for="product">Product</label>
-        <input type="text" id="product" name="product" placeholder="What are you donating?" required>
+        <select id="product" class="form-control" required>
+            <option value="">Select Product</option>
+        </select>
 
         <label for="amount">Amount</label>
         <input type="number" id="amount" name="amount" placeholder="Enter donation amount" step="0.01" required>
 
-        <button type="submit">Donate</button>
+        <button type="submit" id="donateBtn">Donate</button>
     </form>
 
     <div id="message"></div>
 </div>
 
-<script src="script.js"></script>
-<!--<script>document.getElementById("donation-form").addEventListener("submit", function(event) {-->
-<!--    event.preventDefault();-->
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!--    const userId = document.getElementById("userId").value;-->
-<!--    const product = document.getElementById("product").value;-->
-<!--    const amount = parseFloat(document.getElementById("amount").value);-->
+<script>
+    // Load products into the dropdown
+    $(document).ready(function () {
+        $.ajax({
+            url: "http://localhost:8080/api/v1/product/getAll",
+            method: "POST",
+            dataType: "json",
+            success: function (resp) {
+                console.log("API Response:", resp);
 
-<!--    const data = {-->
-<!--        userId,-->
-<!--        product,-->
-<!--        amount-->
-<!--    };-->
+                if (!Array.isArray(resp.data)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Invalid product data received'
+                    });
+                    return;
+                }
 
-<!--    fetch("http://localhost:8080/api/v1/donate", {-->
-<!--        method: "POST",-->
-<!--        headers: {-->
-<!--            "Content-Type": "application/json"-->
-<!--        },-->
-<!--        body: JSON.stringify(data)-->
-<!--    })-->
-<!--        .then(res => {-->
-<!--            if (!res.ok) throw new Error("Something went wrong");-->
-<!--            return res.text();-->
-<!--        })-->
-<!--        .then(message => {-->
-<!--            document.getElementById("message").textContent = message;-->
-<!--            document.getElementById("donation-form").reset();-->
-<!--        })-->
-<!--        .catch(error => {-->
-<!--            document.getElementById("message").textContent = "Failed to donate: " + error.message;-->
-<!--        });-->
-<!--});-->
-<!--</script>-->
+                const $dropdown = $("#product");
+                $dropdown.empty().append('<option value="">Select Product</option>');
+
+                resp.data.forEach(product => {
+                    $dropdown.append(`<option value="${product.productId}">${product.name} - ${product.description}</option>`);
+                });
+            },
+            error: function (err) {
+                console.error("Failed to load products:", err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not load products. Please try again later.'
+                });
+            }
+        });
+
+        // Form submission handling
+        $("#donation-form").submit(function (e) {
+            e.preventDefault();
+
+            const userId = $("#userId").val();
+            const product = $("#product").val();
+            const amount = $("#amount").val();
+
+            if (!product || !amount || !userId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Missing Info',
+                    text: 'Please fill out all fields.'
+                });
+                return;
+            }
+
+            // Redirect to payment page
+            window.location.href = `pay5.html?userId=${encodeURIComponent(userId)}&product=${encodeURIComponent(product)}&amount=${encodeURIComponent(amount)}`;
+        });
+    });
+</script>
 </body>
-
 </html>

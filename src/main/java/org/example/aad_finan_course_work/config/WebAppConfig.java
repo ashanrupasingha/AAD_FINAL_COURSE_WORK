@@ -17,10 +17,10 @@ public class WebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("http://localhost") // Adjust to your HELPZ website URL
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
+        registry.addMapping("/api/**")
+                .allowedOrigins("http://localhost:8080", "http://localhost:63342", "http://127.0.0.1:8080")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+                .allowCredentials(false);
     }
 }

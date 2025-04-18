@@ -24,7 +24,15 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Override
+    public Product findByName(String name) {
+        return productRepo.findByName(name);
+    }
 
+    @Override
+    public void updateProduct(Product product) {
+        productRepo.save(product);
+    }
 
     @Override
     public int savePackage(ProductDTO productDTO) {

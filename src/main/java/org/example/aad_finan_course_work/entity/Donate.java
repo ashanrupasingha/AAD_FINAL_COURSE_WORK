@@ -22,8 +22,4 @@ public class Donate {
     private String email;
     private String price;
 
-
-
-
-
 }
